@@ -1,8 +1,8 @@
-Flask-SocketIO-Chat
-===================
+mud server
+==========
 
-A simple chat application that demonstrates how to structure a Flask-SocketIO application.
+A basic MUD server
 
-To run this application install the requirements in a virtual environment, run `python chat.py` and visit `http://localhost:5000` on one or more browser tabs.
+To run this application install the requirements, run `python chat.py` and visit `http://localhost:5000` on one or more browser tabs.
 
     $ python chat.py
