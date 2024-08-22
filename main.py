@@ -1,4 +1,4 @@
-#!/bin/env python
+
 from flask import Flask, session, redirect, url_for, render_template, request
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
@@ -60,4 +60,4 @@ def chat():
 socketio.init_app(app)
 
 if __name__ == "__main__":
-    socketio.run(app)
+    socketio.run(app, allow_unsafe_werkzeug=True)
