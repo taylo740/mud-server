@@ -1,4 +1,4 @@
-from gevent.pywsgi import WSGIServer
+
 
 from flask import Flask, session, redirect, url_for, render_template, request
 from flask_socketio import SocketIO, emit, join_room, leave_room
@@ -62,5 +62,4 @@ socketio.init_app(app)
 
 if __name__ == "__main__":
     socketio.run(app)
-    http_server = WSGIServer(('', 5000), app)
-    http_server.serve_forever()
+
