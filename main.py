@@ -4,6 +4,7 @@ from flask import Flask, session, redirect, url_for, render_template, request
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
 from Game import Game
+import os
 
 socketio = SocketIO()
 
