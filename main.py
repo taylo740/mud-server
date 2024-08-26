@@ -10,7 +10,6 @@ socketio = SocketIO()
 app = Flask(__name__)
 app.debug = True
 app.config["SECRET_KEY"] = "gjr39dkjn344_!67#"
-app.port = os.getenv("PORT", default=5000)
 
 game = Game()
 
