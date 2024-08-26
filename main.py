@@ -1,10 +1,13 @@
-
+import eventlet
+eventlet.monkey_patch()
 
 from flask import Flask, session, redirect, url_for, render_template, request
 from flask_socketio import SocketIO, emit, join_room, leave_room
+import os
 
 from Game import Game
-import os
+
+
 
 socketio = SocketIO()
 
@@ -14,7 +17,6 @@ app.config["SECRET_KEY"] = "gjr39dkjn344_!67#"
 app.port = os.getenv("PORT", default=5000)
 
 game = Game()
-
 
 @socketio.on("joined", namespace="/chat")
 def joined(message):
@@ -59,9 +61,7 @@ def chat():
         return redirect(url_for("index"))
     return render_template("chat.html", name=name)
 
+socketio.init_app(app, cors_allowed_origins="*", async_mode='eventlet')
 
-socketio.init_app(app)
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     socketio.run(app)
-
