@@ -7,9 +7,16 @@ class Game:
 
     def user_login(self, user):
         self.active_users[user] = True
-
+        user_list = self.get_active_users()
+        self.send_to_users(user_list, user + " has joined the game.")
+        for user in user_list:
+            emit("update_userlist", '\n'.join(user_list), to=user)
     def user_leave(self, user):
         del self.active_users[user]
+        user_list = self.get_active_users()
+        self.send_to_users(user_list, user + " has left the game.")
+        for user in user_list:
+            emit("update_userlist", '\n'.join(user_list), to=user)
 
     def get_active_users(self):
         return list(self.active_users.keys())

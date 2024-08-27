@@ -14,7 +14,7 @@ app.config["SECRET_KEY"] = "gjr39dkjn344_!67#"
 game = Game()
 
 
-@socketio.on("joined", namespace="/chat")
+@socketio.on("joined", namespace="/world")
 def joined(message):
     """Sent by clients when they enter a room.
     A status message is broadcast to all people in the room."""
@@ -22,14 +22,14 @@ def joined(message):
     game.user_login(session.get("name"))
 
 
-@socketio.on("text", namespace="/chat")
+@socketio.on("text", namespace="/world")
 def text(message):
     """Sent by a client when the user entered a new message.
     The message is sent to all people in the room."""
     game.on_message(session.get("name"), message["msg"])
 
 
-@socketio.on("left", namespace="/chat")
+@socketio.on("left", namespace="/world")
 def left(message):
     """Sent by clients when they leave a room.
     A status message is broadcast to all people in the room."""
@@ -42,20 +42,20 @@ def index():
     """Login form to enter a room."""
     if "name" in request.form:
         session["name"] = request.form["name"]
-        return redirect(url_for("chat"))
+        return redirect(url_for("world"))
     elif request.method == "GET":
         name = session.get("name", "")
         return render_template("index.html", name=name)
 
 
-@app.route("/chat")
-def chat():
+@app.route("/world")
+def world():
     """Chat room. The user's name and room must be stored in
     the session."""
     name = session.get("name", "")
     if name == "":
         return redirect(url_for("index"))
-    return render_template("chat.html", name=name)
+    return render_template("world.html", name=name)
 
 
 socketio.init_app(app)
