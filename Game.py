@@ -1,24 +1,47 @@
 from flask_socketio import SocketIO, emit, join_room, leave_room
 import zones.hub, zones.zone1, zones.zone2
 
+from io import StringIO 
+import sys
+
+class Capturing(list):
+    def __enter__(self):
+        self._stdout = sys.stdout
+        sys.stdout = self._stringio = StringIO()
+        return self
+    def __exit__(self, *args):
+        self.extend(self._stringio.getvalue().splitlines())
+        del self._stringio    # free up some memory
+        sys.stdout = self._stdout
+
 class Game:
     def __init__(self):
         self.active_users = {}
         self.modules = {'Hub':zones.hub, 'Zone 1':zones.zone1,
                         'Zone 2':zones.zone2}
         self.zone_users = {}
+        self.user_data = {}
         for key in self.modules:
-            self.zone_users[key] = []
+            self.zone_users[key] = set()
         
         
 
     def user_login(self, user, zone):
         self.active_users[user] = True
-        self.zone_users[zone].append(user)
+        self.zone_users[zone].add(user)
         user_list = self.zone_users[zone]
         self.send_to_users(user_list, user + f" has entered {zone}.")
-        for user in user_list:
-            emit("update_userlist", '\n'.join(user_list), to=user)
+        if zone in self.modules:
+            try:
+                with Capturing() as output:
+                    self.user_data[user] = self.modules[zone].enter_zone(user, None)
+                captured = '\n'.join(output)
+                emit("status", {'msg': captured}, to=user)
+            except:
+                self.user_data[user] = None
+        
+
+        
 
     def user_leave(self, user, zone):
         del self.active_users[user]
@@ -28,8 +51,6 @@ class Game:
             pass
         user_list = self.zone_users[zone]
         self.send_to_users(user_list, user + f" has left {zone}.")
-        for user in user_list:
-            emit("update_userlist", '\n'.join(user_list), to=user)
 
     def get_active_users(self):
         return list(self.active_users.keys())
@@ -45,6 +66,18 @@ class Game:
             self.send_to_users([who, user], user + ' whispers: "' + what + '"')
         else:
             self.send_to_users(self.get_active_users(), user + ": " + text)
+
+    def on_command(self, user, zone, text: str):
+        if zone in self.modules:
+            try:
+                with Capturing() as output:
+                    self.user_data[user] = self.modules[zone].command(user, self.user_data[user], text)
+                captured = '\n'.join(output)
+                emit("status", {'msg': captured}, to=user)
+            except:
+                self.user_data[user] = None
+        
+        print("command by", user, text)
 
 
     

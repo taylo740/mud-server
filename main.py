@@ -28,6 +28,12 @@ def text(message):
     The message is sent to all people in the room."""
     game.on_message(session.get("name"), message["msg"])
 
+@socketio.on("command", namespace="/world")
+def command(message):
+    """Sent by a client when the user entered a new command.
+    The response is sent only to the user in question."""
+    game.on_command(session.get("name"), session.get("zone"), message["msg"])
+
 
 @socketio.on("left", namespace="/world")
 def left(message):

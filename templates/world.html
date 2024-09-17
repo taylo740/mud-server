@@ -29,7 +29,7 @@
         });
         socket.on('status', function(data) {
           d = new Date();
-          $('#chat').val($('#chat').val() + `[${d.toLocaleTimeString()}] <${data.msg}>\n`);
+          $('#chat').val($('#chat').val() + `${data.msg}\n`);
           $('#chat').scrollTop($('#chat')[0].scrollHeight);
         });
         socket.on('message', function(data) {
