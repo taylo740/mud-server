@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>MUD: {{ room }}</title>
+    <title>MUD: {{ zone }}</title>
     <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="//cdn.socket.io/4.4.1/socket.io.min.js"></script>
     <style>
@@ -46,12 +46,18 @@
             socket.emit('text', {msg: text});
           }
         });
-        socket.on('update_userlist', function(users) {
-          console.log(users)
-          $('#roomdata').val(`Players in Zone:\n${users}`);
+        $('#command').keypress(function(e) {
+          const code = e.keyCode || e.which;
+          if (code == 13) {
+            command = $('#command').val();
+            $('#command').val('');
+            socket.emit('command', {msg: command});
+          }
         });
+
+        
       });
-      function leave_room() {
+      function log_out() {
         socket.emit('left', {}, function() {
           socket.disconnect();
 
@@ -62,11 +68,11 @@
     </script>
   </head>
   <body>
-    <h1>MUD:</h1>
+    <h1>MUD: {{ zone }}</h1>
     <textarea id="chat" cols="80" rows="20" readonly></textarea><br><br>
     <input id="text" size="80" placeholder="Enter your message here"><br><br>
-    <a href="#" onclick="leave_room();">Leave this room</a><br><br>
-    <textarea id="roomdata" cols="20" rows="5" readonly></textarea>
+    <input id="command" size="80" placeholder="Enter a command here"><br><br>
+    <a href="#" onclick="log_out();">Log Out</a><br><br>
     
 
   </body>
