@@ -19,7 +19,7 @@ def joined(message):
     """Sent by clients when they enter a room.
     A status message is broadcast to all people in the room."""
     join_room(session.get("name"))
-    game.user_login(session.get("name"))
+    game.user_login(session.get("name"), session.get("zone"))
 
 
 @socketio.on("text", namespace="/world")
@@ -34,14 +34,15 @@ def left(message):
     """Sent by clients when they leave a room.
     A status message is broadcast to all people in the room."""
     leave_room(session.get("name"))
-    game.user_leave(session.get("name"))
+    game.user_leave(session.get("name"), session.get("zone"))
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    """Login form to enter a room."""
+    """Login form to enter a zone."""
     if "name" in request.form:
         session["name"] = request.form["name"]
+        session["zone"] = request.form["zone"]
         return redirect(url_for("world"))
     elif request.method == "GET":
         name = session.get("name", "")
@@ -50,12 +51,13 @@ def index():
 
 @app.route("/world")
 def world():
-    """Chat room. The user's name and room must be stored in
+    """Chat room. The user's name and zone must be stored in
     the session."""
     name = session.get("name", "")
+    zone = session.get("zone", "")
     if name == "":
         return redirect(url_for("index"))
-    return render_template("world.html", name=name)
+    return render_template("world.html", name=name, zone=zone)
 
 
 socketio.init_app(app)

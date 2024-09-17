@@ -5,7 +5,15 @@
     <body>
         <h1>CSCI 1133H MUD Server</h1>
         <form method="POST">
-            <input name="name" type="text" placeholder="name">
+            <label for="name-select">Name:</label>
+            <input name="name" type="text" placeholder="name" id="name-select"><br><br>
+            <label for="zone-select">Starting Zone:</label>
+
+            <select name="zone" id="zone-select">
+                <option value="Hub">Hub</option>
+                <option value="Zone 1">Zone 1</option>
+                <option value="Zone 2">Zone 2</option>
+            </select><br><br>
             <button type="submit">submit</button>
         </form>
     </body>
