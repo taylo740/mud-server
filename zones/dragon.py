@@ -111,7 +111,7 @@ def enter_zone(user, state):
         first enter the adventure.
     Parameters:
         user - the name of the user (string)
-        state - which decision point the user is currently in (string)
+        state - currently unused (None)
     Return Value:
         The starting state value for the game (string)
     '''

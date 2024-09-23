@@ -1,5 +1,5 @@
 from flask_socketio import SocketIO, emit, join_room, leave_room
-import zones.hub, zones.zone1, zones.zone2
+import zones.dragon, zones.hw04
 
 from io import StringIO 
 import sys
@@ -17,8 +17,8 @@ class Capturing(list):
 class Game:
     def __init__(self):
         self.active_users = {}
-        self.modules = {'Hub':zones.hub, 'Zone 1':zones.zone1,
-                        'Zone 2':zones.zone2}
+        self.modules = {"Dragon's Lair":zones.dragon,
+                        'Homework 04':zones.hw04}
         self.zone_users = {}
         self.user_data = {}
         for key in self.modules:
