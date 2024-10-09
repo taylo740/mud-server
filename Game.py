@@ -1,5 +1,30 @@
 from flask_socketio import SocketIO, emit, join_room, leave_room
-import zones.dragon, zones.hw04
+import zones.dragon
+import zones.bloomers_backrooms
+import zones.descend
+import zones.omar
+import zones.soccer
+import zones.guard
+import zones.security
+import zones.cave
+import zones.conquest
+import zones.alley
+import zones.redeye
+import zones.fool
+import zones.major
+import zones.caravan
+import zones.baking
+import zones.barbie
+import zones.house
+import zones.fall
+import zones.doors
+import zones.diamond
+import zones.escape
+import zones.hero
+import zones.boo
+import zones.escape2
+import zones.ring
+import zones.late
 
 from io import StringIO 
 import sys
@@ -17,8 +42,33 @@ class Capturing(list):
 class Game:
     def __init__(self):
         self.active_users = {}
-        self.modules = {"Dragon's Lair":zones.dragon,
-                        'Homework 04':zones.hw04}
+        self.modules = {"Alley":zones.alley,
+                        "Baking Competition":zones.baking,
+                        "barbie dream house yasss (Sophie)":zones.barbie,
+                        "Bloomer's Backrooms (Noah)":zones.bloomers_backrooms,
+                        "Boo's Mansion":zones.boo,
+                        "Caravan Encounter":zones.caravan,
+                        "Cave Zone":zones.cave,
+                        "Diamond Heist":zones.diamond,
+                        "Descend the Mountain":zones.descend,
+                        "Dragon's Lair":zones.dragon,
+                        "Dungeon Conquest (Cristina)":zones.conquest,
+                        "Escape room":zones.escape,
+                        "Escape room (Gia)":zones.escape2,
+                        "Fall Adventure":zones.fall,
+                        "find a ring in the forest (Liv)":zones.ring,
+                        "Fool's Lair (Jose)":zones.fool,
+                        "Guard attack (Bailey)":zones.guard,
+                        "Hero (maybe) (Mike)":zones.hero,
+                        "House (Daniel)":zones.house,
+                        "Late for Class! An Adventure":zones.late,
+                        "Major Help Bot":zones.major,
+                        "Omar's Adventure (Omar)":zones.omar,
+                        "RedEye's Cave":zones.redeye,
+                        "Soccer game":zones.soccer,
+                        "Security Guard":zones.security,
+                        "Three Doors Adventure (Nolan)":zones.doors,
+                        }
         self.zone_users = {}
         self.user_data = {}
         for key in self.modules:
