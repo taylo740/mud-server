@@ -180,6 +180,3 @@ def command(user, state, message):
         else:
             print("Invalid Command")
             return 'Battle'
-
-
-        
