@@ -42,6 +42,31 @@ class Capturing(list):
 class Game:
     def __init__(self):
         self.active_users = {}
+        self.legacy = ["Alley",
+                        "Baking Competition",
+                        "barbie dream house yasss (Sophie)",
+                        "Bloomer's Backrooms (Noah)",
+                        "Boo's Mansion",
+                        "Caravan Encounter",
+                        "Cave Zone"
+                        "Diamond Heist",
+                        "Descend the Mountain",
+                        "Dungeon Conquest (Cristina)",
+                        "Escape room",
+                        "Escape room (Gia)",
+                        "Fall Adventure",
+                        "find a ring in the forest (Liv)",
+                        "Fool's Lair (Jose)",
+                        "Guard attack (Bailey)",
+                        "Hero (maybe) (Mike)",
+                        "House (Daniel)",
+                        "Late for Class! An Adventure",
+                        "Major Help Bot",
+                        "Omar's Adventure (Omar)",
+                        "RedEye's Cave",
+                        "Soccer game",
+                        "Security Guard",
+                        "Three Doors Adventure (Nolan)"]
         self.modules = {"Alley":zones.alley,
                         "Baking Competition":zones.baking,
                         "barbie dream house yasss (Sophie)":zones.barbie,
@@ -70,15 +95,21 @@ class Game:
                         "Three Doors Adventure (Nolan)":zones.doors,
                         }
         self.zone_users = {}
+        self.zone_data = {}
         self.user_data = {}
         for key in self.modules:
             self.zone_users[key] = set()
+            try:
+                self.zone_data[key] = self.modules[key].initialize_areas()
+            except Exception as e:
+                #print("Exception when initializing", key, e)
+                self.zone_data[key] = {}
         
         
 
     def user_login(self, user, zone):
         if user not in self.user_data:
-            stats = {'Health':100, 'Attack':5, 'Defense':5, 'Magic':0}
+            stats = {'Health':100, 'Strength':5, 'Magic':0, 'Gold':50, 'Happiness':12}
             self.user_data[user] = {'inventory':{}, 'stats':stats, 'legacy':None}
             
         self.active_users[user] = True
@@ -86,19 +117,23 @@ class Game:
         user_list = self.zone_users[zone]
         self.send_to_users(user_list, user + f" has entered {zone}.")
         if zone in self.modules:
-            try:
+            #try:
                 with Capturing() as output:
-                    state = self.modules[zone].enter_zone(user, self.user_data[user])
-                    if isinstance(state, dict) and 'inventory' in state:
-                        self.user_data[user]['inventory'] = state['inventory']
-                        self.user_data[user]['stats'] = state['stats']
-                        self.update_stats(user, state['stats'])
+                    if zone in self.legacy:
+                        self.user_data[user]['legacy'] = self.modules[zone].enter_zone(user, None)
                     else:
-                        self.user_data[user]['legacy'] = state
+                        state = self.modules[zone].enter_zone(user, self.user_data[user])
+                        if isinstance(state, dict) and 'inventory' in state and 'stats' in state:
+                            self.user_data[user]['inventory'] = state['inventory']
+                            self.user_data[user]['stats'] = state['stats']
+                            self.update_stats(user, state['stats'])
+                        else:
+                            print("Invalid state returned from enter_zone", state)
+                    
                 captured = '\n'.join(output)
                 emit("status", {'msg': captured}, to=user)
-            except:
-                self.user_data[user]['legacy'] = False
+            #except Exception as e:
+                #self.user_data[user]['legacy'] = False
         
 
         
@@ -132,22 +167,24 @@ class Game:
 
     def on_command(self, user, zone, text: str):
         if zone in self.modules:
-            try:
+            #try:
                 with Capturing() as output:
-                    if self.user_data[user]['legacy'] is not None:
+                    if zone in self.legacy:
                         self.user_data[user]['legacy'] = self.modules[zone].command(user, self.user_data[user]['legacy'], text)
                     else:
-                        state = self.modules[zone].command(user, self.user_data[user]['legacy'], text)
-                        if isinstance(state, dict) and 'inventory' in state:
+                        state = self.modules[zone].command(user, self.user_data[user], text)
+                        if isinstance(state, dict) and 'inventory' in state and 'stats' in state:
                             self.user_data[user]['inventory'] = state['inventory']
                             self.user_data[user]['stats'] = state['stats']
+                            self.update_stats(user, state['stats'])
                         else:
-                            self.user_data[user]['legacy'] = state
+                            print("Invalid state returned from command", state)
 
                 captured = '\n'.join(output)
                 emit("status", {'msg': captured}, to=user)
-            except:
-                self.user_data[user] = None
+            #except Exception as e:
+                #print("Exception occurred during command function", e)
+                #self.user_data[user]['legacy'] = None
         
         print("command by", user, text)
 

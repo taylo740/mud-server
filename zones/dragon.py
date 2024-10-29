@@ -1,7 +1,17 @@
-#Messages for each possible decision
 
+def attack_dragon(user, state):
+    print("YOU ATTACKED THE DARGON RAWR")
+    print("You deal 5 damage")
+    state['zone_data']['dragon']['health'] -= 5
 
+def use_fountain(user, state):
+    print("You drink from the healing fountain and restore your health")
+    state['stats']['Health'] = 100
 
+def initialize_areas():
+    print("TWO DRAGON")
+    dragon = {'room':'lair', 'present':True, 'health':200, 'commands':{'attack': attack_dragon}}
+    return {'dragon':dragon, }
 
 def enter_zone(user, state):
     '''
@@ -13,6 +23,8 @@ def enter_zone(user, state):
     Return Value:
         The starting state value for the game (string)
     '''
+    state['room'] = 'Entrance'
+
     return state
 
 def command(user, state, message):
@@ -28,4 +40,8 @@ def command(user, state, message):
         The next state for the user, which determines what decision
         they will need to make next. (string)
     '''
-    return 'End'
+    print("message is", message)
+    print("stats is", state['stats'])
+    if 'heal' in message:
+        state['stats']['Health'] += 5
+    return state
