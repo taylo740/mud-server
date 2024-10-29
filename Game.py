@@ -77,6 +77,10 @@ class Game:
         
 
     def user_login(self, user, zone):
+        if user not in self.user_data:
+            stats = {'Health':100, 'Attack':5, 'Defense':5, 'Magic':0}
+            self.user_data[user] = {'inventory':{}, 'stats':stats, 'legacy':None}
+            
         self.active_users[user] = True
         self.zone_users[zone].add(user)
         user_list = self.zone_users[zone]
@@ -84,11 +88,17 @@ class Game:
         if zone in self.modules:
             try:
                 with Capturing() as output:
-                    self.user_data[user] = self.modules[zone].enter_zone(user, None)
+                    state = self.modules[zone].enter_zone(user, self.user_data[user])
+                    if isinstance(state, dict) and 'inventory' in state:
+                        self.user_data[user]['inventory'] = state['inventory']
+                        self.user_data[user]['stats'] = state['stats']
+                        self.update_stats(user, state['stats'])
+                    else:
+                        self.user_data[user]['legacy'] = state
                 captured = '\n'.join(output)
                 emit("status", {'msg': captured}, to=user)
             except:
-                self.user_data[user] = None
+                self.user_data[user]['legacy'] = False
         
 
         
@@ -104,6 +114,9 @@ class Game:
 
     def get_active_users(self):
         return list(self.active_users.keys())
+    
+    def update_stats(self, user, stats):
+        emit("stats_change", {"msg": stats}, to=user)
 
     def send_to_users(self, users, text):
         for user in users:
@@ -121,7 +134,16 @@ class Game:
         if zone in self.modules:
             try:
                 with Capturing() as output:
-                    self.user_data[user] = self.modules[zone].command(user, self.user_data[user], text)
+                    if self.user_data[user]['legacy'] is not None:
+                        self.user_data[user]['legacy'] = self.modules[zone].command(user, self.user_data[user]['legacy'], text)
+                    else:
+                        state = self.modules[zone].command(user, self.user_data[user]['legacy'], text)
+                        if isinstance(state, dict) and 'inventory' in state:
+                            self.user_data[user]['inventory'] = state['inventory']
+                            self.user_data[user]['stats'] = state['stats']
+                        else:
+                            self.user_data[user]['legacy'] = state
+
                 captured = '\n'.join(output)
                 emit("status", {'msg': captured}, to=user)
             except:

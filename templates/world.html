@@ -13,6 +13,7 @@
         background-color:darkgrey;
         color:green;
         font-size: 1.5em;
+
       }
       input {
         background-color:darkgrey;
@@ -22,6 +23,31 @@
       a {
         color: lightgreen;
         font-size: 1.5em;
+      }
+      h2 {
+        margin: 0px;
+      }
+      h1 {
+        margin: 0px;
+      }
+      .grid-container {
+        display: grid;
+        grid-template-columns: 900px auto;
+        padding: 0px;
+        
+      }
+      .grid-item {
+        padding: 5px;
+      }
+      .long-grid-item {
+        grid-row-start: 2;
+        grid-row-end: 6;
+        padding: 5px;
+      }
+      .two-grid-item {
+        grid-row-start: 6;
+        grid-row-end: 8;
+        padding: 5px;
       }
     </style>
     <script type="text/javascript" charset="utf-8">
@@ -36,8 +62,14 @@
           $('#chat').val($('#chat').val() + `${data.msg}\n`);
           $('#chat').scrollTop($('#chat')[0].scrollHeight);
         });
+        socket.on('stats_change', function(data) {
+          $('#stats').val(``);
+          for (property in data.msg) {
+            $('#stats').val($('#stats').val() + `${property}: ${data.msg[property]}\n`);
+          }
+        });
         socket.on('message', function(data) {
-          console.log(data)
+          console.log(data);
           d = new Date();
           $('#chat').val($('#chat').val() + `[${d.toLocaleTimeString()}] ${data.msg}\n`);
           $('#chat').scrollTop($('#chat')[0].scrollHeight);
@@ -72,11 +104,27 @@
     </script>
   </head>
   <body>
-    <h1>MUD: {{ zone }}</h1>
-    <textarea id="chat" cols="80" rows="20" readonly></textarea><br><br>
-    <input id="text" size="80" placeholder="Enter a message here"><br><br>
-    <input id="command" size="80" placeholder="Enter a command here"><br><br>
-    <a href="#" onclick="log_out();">Log Out</a><br><br>
+    
+    <div class="grid-container">
+      <div class="grid-item"><h1>MUD: {{ zone }}</h1></div>
+      <div class="grid-item"><h2>Things in Room</h2></textarea></div>
+      <div class="long-grid-item"><textarea id="chat" cols="80" rows="20" readonly></textarea></div>
+      <div class="grid-item"><textarea id="room" cols="20" rows="8" readonly></textarea></div>
+      <div class="grid-item"><h2>Stats</h2></textarea></div>
+      <div class="grid-item"><textarea id="stats" cols="20" rows="8" readonly></textarea></div> 
+      <div class="grid-item"><h2>Inventory</h2></textarea></div> 
+      <div class="grid-item"><textarea id="inventory" cols="20" rows="8" readonly></textarea></div>
+       
+       
+      <div class="two-grid-item">
+        <input id="text" size="60" placeholder="Enter a message here"><br><br>
+        <input id="command" size="60" placeholder="Enter a command here"><br><br>
+        <a href="#" onclick="log_out();">Log Out</a><br><br> 
+      </div>
+      
+
+
+
     
 
   </body>
